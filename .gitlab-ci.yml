@@ -1,0 +1,10 @@
+image: dev-docker-registry0.km.rst.com.pl:5000/libraries/node:10.15.1
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - make
+  allow_failure: true
