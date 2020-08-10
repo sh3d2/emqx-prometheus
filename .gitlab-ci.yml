@@ -8,7 +8,7 @@ build:
   script:
     - make
     - mkdir artifacts
-    - cp -ar _build/default/lib/emqx_statsd artifacts
+    - cp -r _build/default/lib/emqx_statsd artifacts
   allow_failure: true
   artifacts:
     paths:
