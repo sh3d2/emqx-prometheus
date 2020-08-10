@@ -41,5 +41,5 @@ start(_StartType, _StartArgs) ->
     emqx_statsd_sup:start_link(PushGateway, Interval).
 
 stop(_State) ->
-   	ok = cowboy:stop_listener(http).
+    ok = cowboy:stop_listener(http).
 

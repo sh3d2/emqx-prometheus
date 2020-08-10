@@ -78,12 +78,9 @@ init(Req0, State) ->
         Req0),
     {ok, Req, State}.
 
-
 init([PushGateway, Interval]) ->
     Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
     {ok, #state{timer = Ref, push_gateway = PushGateway, interval = Interval}}.
-
-
 
 handle_call(_Msg, _From, State) ->
     {noreply, State}.
