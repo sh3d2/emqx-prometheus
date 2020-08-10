@@ -27,7 +27,7 @@
 -rest_api(#{name   => stats,
             method => 'GET',
             path   => "/emqx_statsd",
-            func   => statstest,
+            func   => stats,
             descr  => "Get emqx all stats info"
            }).
 
