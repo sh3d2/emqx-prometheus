@@ -1,4 +1,4 @@
-image: dev-docker-registry0.km.rst.com.pl:5000/libraries/node:10.15.1
+image: erlang
 
 stages:
   - build
