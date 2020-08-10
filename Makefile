@@ -3,7 +3,7 @@
 REBAR_GIT_CLONE_OPTIONS += --depth 1
 export REBAR_GIT_CLONE_OPTIONS
 
-REBAR = rebar3
+REBAR = $(CURDIR)/rebar3
 all: compile
 
 compile:
