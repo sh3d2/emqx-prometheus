@@ -1,4 +1,4 @@
-image: erlang
+image: erlang:22
 
 stages:
   - build
