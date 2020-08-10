@@ -44,7 +44,9 @@
 -export([start_link/2]).
 
 %% Internal Exports
+
 -export([ init/1
+        , init/2
         , handle_call/3
         , handle_cast/2
         , handle_info/2
@@ -73,9 +75,19 @@ statstest(_Bindings, _Params) ->
 start_link(PushGateway, Interval) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
 
+init(Req0, State) ->
+    Req = cowboy_req:reply(200,
+        #{<<"content-type">> => <<"text/plain">>},
+        prometheus_text_format:format(),
+        Req0),
+    {ok, Req, State}.
+
+
 init([PushGateway, Interval]) ->
     Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
     {ok, #state{timer = Ref, push_gateway = PushGateway, interval = Interval}}.
+
+
 
 handle_call(_Msg, _From, State) ->
     {noreply, State}.

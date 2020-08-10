@@ -30,8 +30,16 @@
 start(_StartType, _StartArgs) ->
     PushGateway = application:get_env(?APP, push_gateway, "http://127.0.0.1:9091"),
     Interval = application:get_env(?APP, interval, 5000),
+    Dispatch = cowboy_router:compile([
+    		{'_', [
+    			{"/", emqx_statsd, []}
+    		]}
+    	]),
+    	{ok, _} = cowboy:start_clear(http, [{port, 8080}], #{
+    		env => #{dispatch => Dispatch}
+    	}),
     emqx_statsd_sup:start_link(PushGateway, Interval).
 
 stop(_State) ->
-    ok.
+   	ok = cowboy:stop_listener(http).
 
