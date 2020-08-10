@@ -10,13 +10,6 @@
   {datatype, integer}
 ]}.
 
-
-{mapping, "prometheus.port", "emqx_statsd.port", [
-  {default, 8081},
-  {datatype, integer}
-]}.
-
-
 {mapping, "prometheus.collector.$name", "prometheus.collectors", [
   {datatype, atom}
 ]}.

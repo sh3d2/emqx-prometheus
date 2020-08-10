@@ -38,7 +38,6 @@
         ]).
 
 -export([stats/2]).
--export([statstest/2]).
 
 %% Interface
 -export([start_link/2]).
@@ -68,9 +67,6 @@
 
 stats(_Bindings, _Params) ->
     return({ok, collect()}).
-
-statstest(_Bindings, _Params) ->
-    {ok, prometheus_text_format:format()}.
 
 start_link(PushGateway, Interval) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
