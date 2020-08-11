@@ -27,6 +27,7 @@ build:
 publish:
   stage: publish
   script:
+    - apt-get install ruby ruby-dev rubygems build-essential
     - gem install --no-document fpm
     - fpm -s dir -t tar --prefix=/usr/lib/emqx/lib -n emqx-prometheus _build/default/lib/emqx_statsd
     - fpm --verbose -s tar -t rpm -n "emqx-prometheus" -v "${VERSION}" emqx-prometheus.tar
