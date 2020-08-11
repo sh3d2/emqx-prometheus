@@ -31,7 +31,10 @@ publish:
     - apt-get update
     - apt-get -y install ruby ruby-dev rubygems build-essential rpm
     - gem install --no-document fpm
-    - fpm -s dir -t tar --prefix=/usr/lib/emqx/lib -n emqx-prometheus _build/default/lib/emqx_statsd
+    - mkdir package
+    - cp -rL _build/default/lib/emqx_statsd package
+    - cd package
+    - fpm -s dir -t tar --prefix=/usr/lib/emqx/lib/test -n emqx-prometheus .rebar3 ebin include priv src
     - fpm --verbose -s tar -t rpm -n "emqx-prometheus" -v "${VERSION}" emqx-prometheus.tar
     - cp *.rpm artifacts/
 #    - ./upload_rpms.sh -r ${RPM_REPOSITORY_ID} -f artifacts/emqx-stats*.rpm -u "${RPM_REPOSITORY_USER}" -p "${RPM_REPOSITORY_PASSWORD}"
