@@ -37,5 +37,5 @@ publish:
       - artifacts/
     name: "${CI_BUILD_NAME}_${CI_BUILD_REF}"
     expire_in: 1 hour
-  only:
-    - tags
+#  only:
+#    - tags
