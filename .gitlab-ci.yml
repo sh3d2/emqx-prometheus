@@ -27,6 +27,7 @@ build:
 publish:
   stage: publish
   script:
+    - gem install --no-document fpm
     - fpm -s dir -t tar --prefix=/usr/lib/emqx/lib -n emqx-prometheus _build/default/lib/emqx_statsd
     - fpm --verbose -s tar -t rpm -n "emqx-prometheus" -v "${VERSION}" emqx-prometheus.tar
 #    - ./upload_rpms.sh -r ${RPM_REPOSITORY_ID} -f artifacts/emqx-stats*.rpm -u "${RPM_REPOSITORY_USER}" -p "${RPM_REPOSITORY_PASSWORD}"
