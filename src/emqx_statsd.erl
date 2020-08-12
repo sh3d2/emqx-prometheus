@@ -40,7 +40,7 @@
 -export([stats/2]).
 
 %% Interface
--export([start_link/3]).
+-export([start_link/1]).
 
 %% Internal Exports
 
@@ -63,13 +63,13 @@
 
 -define(TIMER_MSG, '#interval').
 
--record(state, {push_gateway, timer, interval}).
+-record(state, {dispatch}).
 
 stats(_Bindings, _Params) ->
     return({ok, collect()}).
 
-start_link(PushGateway, Interval, Port) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval, Port], []).
+start_link(Port) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [Port], []).
 
 init(Req0, State) ->
     Req = cowboy_req:reply(200,
@@ -78,8 +78,7 @@ init(Req0, State) ->
         Req0),
     {ok, Req, State}.
 
-init([PushGateway, Interval, Port]) ->
-    Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
+init([Port]) ->
     Dispatch = cowboy_router:compile([
         {'_', [
             {"/metrics", emqx_statsd, []}
@@ -88,20 +87,13 @@ init([PushGateway, Interval, Port]) ->
     {ok, _} = cowboy:start_clear(http, [{port, Port}], #{
         env => #{dispatch => Dispatch}
     }),
-    {ok, #state{timer = Ref, push_gateway = PushGateway, interval = Interval}}.
+    {ok, #state{dispatch = Dispatch}}.
 
 handle_call(_Msg, _From, State) ->
     {noreply, State}.
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
-
-handle_info({timeout, R, ?TIMER_MSG}, S = #state{interval=I, timer=R, push_gateway=Uri}) ->
-    [Name, Ip] = string:tokens(atom_to_list(node()), "@"),
-    Url = lists:concat([Uri, "/metrics/job/", Name, "/instance/",Name, "~", Ip]),
-    Data = prometheus_text_format:format(),
-    httpc:request(post, {Url, [], "text/plain", Data}, [{autoredirect, true}], []),
-    {noreply, S#state{timer = erlang:start_timer(I, self(), ?TIMER_MSG)}};
 
 handle_info(_Msg, State) ->
     {noreply, State}.

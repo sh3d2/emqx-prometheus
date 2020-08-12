@@ -18,17 +18,17 @@
 
 -behaviour(supervisor).
 
--export([start_link/3]).
+-export([start_link/1]).
 
 -export([init/1]).
 
-start_link(PushGateway, Interval, Port) ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval, Port]).
+start_link(Port) ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, [Port]).
 
-init([PushGateway, Interval, Port]) ->
+init([Port]) ->
     {ok, {#{strategy => one_for_one, intensity => 10, period => 100},
           [#{id       => emqx_statsd,
-             start    => {emqx_statsd, start_link, [PushGateway, Interval, Port]},
+             start    => {emqx_statsd, start_link, [Port]},
              restart  => permanent,
              shutdown => 5000,
              type     => worker,
