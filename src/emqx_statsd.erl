@@ -40,7 +40,7 @@
 -export([stats/2]).
 
 %% Interface
--export([start_link/2]).
+-export([start_link/3]).
 
 %% Internal Exports
 
@@ -68,8 +68,8 @@
 stats(_Bindings, _Params) ->
     return({ok, collect()}).
 
-start_link(PushGateway, Interval) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval], []).
+start_link(PushGateway, Interval, Port) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [PushGateway, Interval, Port], []).
 
 init(Req0, State) ->
     Req = cowboy_req:reply(200,
@@ -78,8 +78,16 @@ init(Req0, State) ->
         Req0),
     {ok, Req, State}.
 
-init([PushGateway, Interval]) ->
+init([PushGateway, Interval, Port]) ->
     Ref = erlang:start_timer(Interval, self(), ?TIMER_MSG),
+    Dispatch = cowboy_router:compile([
+        {'_', [
+            {"/metrics", emqx_statsd, []}
+        ]}
+    ]),
+    {ok, _} = cowboy:start_clear(http, [{port, Port}], #{
+        env => #{dispatch => Dispatch}
+    }),
     {ok, #state{timer = Ref, push_gateway = PushGateway, interval = Interval}}.
 
 handle_call(_Msg, _From, State) ->
